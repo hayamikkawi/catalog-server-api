@@ -18,9 +18,9 @@ app.post('/books', (req, res)=>{
 })
 //get a book by number 
 app.get('/books/info/:id', (req, res)=>{
-    Book.find({itemNumber:req.params.id}).then((book)=>{
+    Book.findOne({itemNumber:req.params.id}).then((book)=>{
         if(!book){
-            return res.status(404).send()
+            return res.status(404).send("Invalid item id")
         }
         res.send(book)
     }).catch((err)=>{
@@ -30,8 +30,8 @@ app.get('/books/info/:id', (req, res)=>{
 //get a book by topic
 app.get('/books/search/:topic', (req, res)=>{
     Book.find({topic: req.params.topic}).then((books)=>{
-        if(!books){
-            return res.status(404).send()
+        if(!books.length){
+            return res.status(404).send("No items found with the specified topic.")
         }
         res.send(books)
     }).catch((err)=>{
