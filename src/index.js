@@ -39,13 +39,34 @@ app.get('/books/search/:topic', (req, res)=>{
     })
 })
 //update cost 
-app.patch('/books/:id', (req, res)=>{
+app.patch('/books/cost/:id', (req, res)=>{
     const cost = req.body.cost
-    const numberOfItems = req.body.numberOfItems
-    Book.findOneAndUpdate(req.params.id, {cost, numberOfItems}).then((response)=>{
+    if(cost == null){
+        return res.status(400).send("Please provide a cost!")
+    }
+    else if(cost<0){
+        return res.status(400).send("Bad value for cost")
+    }
+    Book.findOneAndUpdate({itemNumber:req.params.id}, {cost}).then((response)=>{
         res.send(response)
     }).catch((err)=>{
         res.status(500).send(err)
+    })
+})
+//update number of items
+app.patch('/books/count/:id', (req, res)=>{
+    const numberOfItems = req.body.numberOfItems
+    if(numberOfItems == null){
+        return res.status(400).send('Please provide number of items')
+    }
+    else if(numberOfItems<0){
+        return res.status(400).send("Bad value for number of items")
+    }
+    Book.findOneAndUpdate({itemNumber:req.params.id}, {numberOfItems}).then((response)=>{
+            res.send(response)
+
+    }).catch((err)=>{
+        res.status(500).send("err")
     })
 })
 app.listen(port, ()=>{
