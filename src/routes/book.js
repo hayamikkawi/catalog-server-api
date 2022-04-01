@@ -17,7 +17,7 @@ router.get('/books/info/:id', async(req, res)=>{
     try{
         const book = await Book.findOne({itemNumber:req.params.id})
         if(!book){
-            return res.status(404).send("Invalid item id")
+            return res.status(404).send("Invalid Item Id")
         }
         res.status(200).send(book)
     } catch(err){
@@ -41,35 +41,28 @@ router.get('/books/search/:topic', async(req, res)=>{
     }
 })
 
-//update cost 
-router.patch('/books/cost/:id', (req, res)=>{
-    const cost = req.body.cost
-    if(cost == null){
-        return res.status(400).send("Please provide a cost!")
-    }
-    else if(cost<0){
-        return res.status(400).send("Bad value for cost")
-    }
-    Book.findOneAndUpdate({itemNumber:req.params.id}, {cost}).then((response)=>{
-        res.send(response)
-    }).catch((err)=>{
-        res.status(500).send(err)
-    })
-})
-//update number of items
-router.patch('/books/count/:id', (req, res)=>{
-    const numberOfItems = req.body.numberOfItems
-    if(numberOfItems == null){
-        return res.status(400).send('Please provide number of items')
-    }
-    else if(numberOfItems<0){
-        return res.status(400).send("Bad value for number of items")
-    }
-    Book.findOneAndUpdate({itemNumber:req.params.id}, {numberOfItems}).then((response)=>{
-            res.send(response)
+//update cost or number of items
+router.patch('/books/:id', async (req, res) => {
 
-    }).catch((err)=>{
-        res.status(500).send("err")
-    })
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['cost', 'numberOfItems']
+    try {
+        const book = await Book.findOne({ itemNumber: req.params.id })
+        if (!book) {
+            return res.status(404).send("Invalid Item Id")
+        }
+        const isValidUpdate= updates.every((update) => allowedUpdates.includes(update))
+        if (!isValidUpdate) {
+            return res.status(400).send( "invalid update operation")
+        }
+
+        updates.forEach((update) => { book[update] = req.body[update] })
+
+        await book.save()
+        res.status(200).send("Book was successfully updated")
+    } catch (e) {
+        res.status(500).send()
+    }
+
 })
 module.exports= router

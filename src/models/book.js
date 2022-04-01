@@ -8,7 +8,12 @@ const validator = require('validator')
         }, 
         cost:{
             type: Number,
-            required: true 
+            required: true , 
+            validate(value){
+                if(value<0){
+                    throw new Error('negative values aren\'t allowed')
+                }
+            }
         }, 
         numberOfItems:{
             type: Number, 
