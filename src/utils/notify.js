@@ -4,7 +4,7 @@ const notify = (id, changes) => {
     return new Promise((resolve, reject) => {
         const replicas = process.env.REP_IP.split(', ')
         replicas.forEach(ip => {
-            const url = 'http://' + ip + ':3000/books/' + id
+            const url = 'http://' + ip + ':3000/notify/books/' + id
             console.log(url)
             request({ url, json: true, method: "PATCH", body: changes }, (error, res) => {
                 if (error) {
